@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt 
+from mpl_toolkits.mplot3d import Axes3D #used for 3D scalar fields 
 
 # #exercise  1
 
@@ -88,36 +89,98 @@ import matplotlib.pyplot as plt
 #Exercise 8 Vector fields on curves and surfaces 
 
 
-#a
+# #a
 
-#curve = C(t) & scalar field = f(x, y)
+# #curve = C(t) & scalar field = f(x, y)
 
-def f(x, y) :
-    return x*(x + y**2)
+# def f(x, y) :
+#     return x*(x + y**2)
 
 
-#choose a sutiable intervall for t:
+# #choose a sutiable intervall for t:
 
-t = np.linspace(-2, 2, 20)
+# t = np.linspace(-2, 2, 100)
 
-#this is the curve C(t)
-x = t**2 - 2
-y = t + 1
+# #this is the curve C(t)
+# x = t**2 - 2
+# y = t + 1
 
-#function f on the curve
-c = f(x,y)
+# #we plot f along the curve C 
+# # f(c(t)) = (t**2 - 2)*((t**2 - 2) + (t + 1)**2)
 
-figure = plt.figure(figsize = (7, 7))
-ax = figure.add_subplot()
+# #function f on the curve
+# fdotC = f(x,y) #this is the f(c(t)) or f(x(t), y(t))
 
-#scatter is used to plot the curve with colors to represent the scalar field values 
-scalar_field = ax.scatter(x, y, c=c, cmap = 'coolwarm')
-ax.plot(x, y, color = 'red')
+# #figure = plt.figure(figsize = (7, 7))
+# figure, ax = plt.subplots(figsize = (7, 7))
 
-#
-print('x:', x, ' ,y: ', y, ' ,f(x, y): ', c)
-#plt.colorbar(scalar_field, label=r'f(x,y)')
-plt.grid(True)
-plt.show()
+# #scatter is used to plot the curve with colors to represent the scalar field values 
+# scalar_field = ax.scatter(x, y, c=fdotc, cmap = 'coolwarm', label = 'The scalar field f on the curve C')
+# ax.plot(x, y, color = 'red', label = 'The curve C')
+# #cbar = plt.colorbar(scalar_field, ax = ax, label = 'f on C')
 
-#b
+# #
+# print('x:', x, ' ,y: ', y, ' ,f(x, y): ', scalarV) #debugging
+# plt.grid(True)
+# plt.show()
+
+# #b
+
+# #the function 
+# def f(x, y, z) :
+#     return x**2*z*y
+
+# #the choosen interval for t
+# t = np.linspace(-3, 3, 20)
+
+# #the curve values 
+# x = t
+# y = t**3 - 4*t + 1
+# z = 1 - t**2
+
+# #now combine the scalar field and the curve 
+# fdotc = f(x, y, z)
+
+# figure = plt.figure(figsize = (7, 7)) 
+# ax = figure.add_subplot(111, projection='3d') # 111 is a shorthand for specofying the position of the subplot
+
+# #make det scalar field 
+# scalar_field = ax.scatter(x, y, z,  c = fdotc, cmap = 'viridis', label = 'The scalar field f on the curve C')
+# ax.plot(x, y, z, color = 'blue', linewidth = 0.5, label = 'The curve C')
+
+# plt.grid()
+# plt.show()
+
+# #c
+
+# def f(x, y, z) :
+#     return x**3*z + 3*y*z**2 - 3*x*z
+
+
+# t = np.linspace(0, 20, 100)
+
+
+# x = np.cos(t)
+# y = np.sin(t)*np.cos(3*t)
+# z = t*np.cos(2*t)
+
+# #f(c(t))
+# fdotc = f(z, y, z)
+
+# figure = plt.figure(figsize = (7, 7)) 
+# ax = figure.add_subplot(111, projection='3d') 
+
+# scalar_field = ax.scatter(x, y, z,  c = fdotc, cmap = 'viridis', label = 'The scalar field f on the curve C')
+# ax.plot(x, y, z, color = 'blue', linewidth = 0.5, label = 'The curve C')
+
+# ax.set_xlabel('X')
+# ax.set_ylabel('Y')
+# ax.set_zlabel('Z')
+
+# plt.legend
+
+# plt.grid()
+# plt.show()
+
+
+
