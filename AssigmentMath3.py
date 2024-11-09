@@ -148,7 +148,7 @@ from mpl_toolkits.mplot3d import Axes3D #used for 3D scalar fields
 # scalar_field = ax.scatter(x, y, z,  c = fdotc, cmap = 'viridis', label = 'The scalar field f on the curve C')
 # ax.plot(x, y, z, color = 'blue', linewidth = 0.5, label = 'The curve C')
 
-# plt.grid()
+# plt.grid(True)
 # plt.show()
 
 # #c
@@ -177,10 +177,88 @@ from mpl_toolkits.mplot3d import Axes3D #used for 3D scalar fields
 # ax.set_ylabel('Y')
 # ax.set_zlabel('Z')
 
-# plt.legend
+# plt.legend()
 
-# plt.grid()
+# plt.grid(True)
 # plt.show()
+
+# #Exercise 9 
+
+# #a
+
+# #the scalar field 
+# def f(x, y, z) :
+#     return x*y*z
+
+# #define the intervals for x and y for the surface
+# x = np.linspace(-1, 1, 50)
+# y = np.linspace(-1, 1, 50)
+
+# #a mesh grid for the x and y
+
+# xmesh, ymesh = np.meshgrid(x, y)
+
+# #define the surface
+# X = 1 - xmesh**2 - ymesh**2 #paraboloid
+
+# #f(X(x, y))
+# fdotX = f(xmesh, ymesh, X)
+
+# #plot the surface 
+# figure = plt.figure(figsize=(10, 10))
+# ax = figure.add_subplot(111, projection='3d')
+
+# #now plot the surface of the paraboloid 
+# ax.scatter(xmesh, ymesh, X, c = fdotX, cmap = 'viridis', label = 'Paraboloid', s = 10)
+# #ax.plot_surface(xmesh, ymesh, X, color = 'blue', linewidth = 0.5, label = 'Paraoloid')
+# #you can choose if you want to see a smooth surface or a dotted surface
+
+# ax.set_xlabel('X')
+# ax.set_ylabel('Y')
+# ax.set_zlabel('Z')
+
+# plt.legend()
+
+# plt.grid(True)
+# plt.show()
+
+#b
+
+def f(x, y, z) :
+    return (x + y + z)*np.e**(-x*y*z)
+
+x = np.linspace(-1, 1, 50)
+y = np.linspace(-1, 1, 50)
+
+xmesh, ymesh = np.meshgrid(x, y)
+
+X = xmesh*ymesh
+
+fdotX = f(xmesh, ymesh, X)
+
+figure = plt.figure(figsize=(10, 10))
+ax = figure.add_subplot(111, projection='3d')
+
+#now plot the surface of the paraboloid 
+ax.scatter(xmesh, ymesh, X, c = fdotX, cmap = 'viridis', label = 'surface X', s = 10)
+#ax.plot_surface(xmesh, ymesh, X, color = 'blue', linewidth = 0.5, label = 'Paraoloid')
+#you can choose if you want to see a smooth surface or a dotted surface
+
+ax.set_xlabel('X')
+ax.set_ylabel('Y')
+ax.set_zlabel('Z')
+
+plt.legend()
+
+plt.grid(True)
+plt.show()
+
+#c
+
+def f(x, y, z) :
+    return (x + y + z) / (x*y*x)
+
+
 
 
 
