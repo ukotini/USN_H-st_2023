@@ -222,41 +222,212 @@ from mpl_toolkits.mplot3d import Axes3D #used for 3D scalar fields
 # plt.grid(True)
 # plt.show()
 
-#b
+# #b
 
-def f(x, y, z) :
-    return (x + y + z)*np.e**(-x*y*z)
+# def f(x, y, z) :
+#     return (x + y + z)*np.e**(-x*y*z)
 
-x = np.linspace(-1, 1, 50)
-y = np.linspace(-1, 1, 50)
+# Ix = np.linspace(-1, 1, 50)
+# Iy = np.linspace(-1, 1, 50)
 
-xmesh, ymesh = np.meshgrid(x, y)
+# x, y = np.meshgrid(Ix, Iy)
 
-X = xmesh*ymesh
+# X = x*y
 
-fdotX = f(xmesh, ymesh, X)
+# fdotX = f(x, y, X)
 
-figure = plt.figure(figsize=(10, 10))
-ax = figure.add_subplot(111, projection='3d')
+# figure = plt.figure(figsize=(10, 10))
+# ax = figure.add_subplot(111, projection='3d')
 
-#now plot the surface of the paraboloid 
-ax.scatter(xmesh, ymesh, X, c = fdotX, cmap = 'viridis', label = 'surface X', s = 10)
-#ax.plot_surface(xmesh, ymesh, X, color = 'blue', linewidth = 0.5, label = 'Paraoloid')
-#you can choose if you want to see a smooth surface or a dotted surface
+# #now plot the surface of the paraboloid 
+# ax.scatter(x, y, X, c = fdotX, cmap = 'viridis', label = 'surface X', s = 10)
+# #ax.plot_surface(xmesh, ymesh, X, color = 'blue', linewidth = 0.5, label = 'Paraoloid')
+# #you can choose if you want to see a smooth surface or a dotted surface
 
-ax.set_xlabel('X')
-ax.set_ylabel('Y')
-ax.set_zlabel('Z')
+# ax.set_xlabel('X')
+# ax.set_ylabel('Y')
+# ax.set_zlabel('Z')
 
-plt.legend()
+# plt.legend()
 
-plt.grid(True)
-plt.show()
+# plt.grid(True)
+# plt.show()
 
-#c
+# #c
 
-def f(x, y, z) :
-    return (x + y + z) / (x*y*x)
+# def f(x, y, z) :
+#     return (x + y + z) / (x*y*x)
+
+# Ix = np.linspace(-1, 1, 20)
+# Iy= np.linspace(-1, 1, 20)
+
+# x, y = np.meshgrid(Ix, Iy)
+
+# P = x + x*y
+# Q = x**2 + (1-x)*y
+# R = -x + x*y
+
+# fdotX = f(P, R, Q)
+
+# figure = plt.figure(figsize=(10, 10))
+# ax = figure.add_subplot(111, projection='3d')
+
+# ax.scatter(P, Q, R, c = fdotX, cmap = 'viridis', label = 'surface X', s = 10)
+
+# ax.set_xlabel('X')
+# ax.set_ylabel('Y')
+# ax.set_zlabel('Z')
+
+# plt.legend()
+
+# plt.grid(True)
+# plt.show()
+
+#Exercise 13
+
+#a Riemann 
+
+# define the r(t) = (t**2, t)
+def r(t) :
+    x = t**2
+    y = t
+    return x, y
+
+# define the dericative of r(t)
+
+def dr(t) : 
+    dx = 2*t
+    dy = 1
+    return dx, dy
+
+# define the vector field field u(x, y) = (y, x)
+def u(x, y) :
+    u1 = y
+    u2 = x
+    return u1, u2
+
+# this is the intergrand fot the line integral 
+def integrand(t) :
+    x, y = r(t)             # getting the coordinates of the curve r(t)
+    u1, u2 = u(x, y)        # evaluating the vector field
+    dx, dy = dr(t)          # getting the tangent vector 
+    return  u1 * dx + u2*dy #computing the dot product 
+
+
+def upperRiemannSum(a, b, n) :
+    tvalue = np.linspace(a, b, n)
+    dt = (b - a)/n
+    upperBound = 0
+
+    for i in range(1, n) :
+        upperBound += integrand(tvalue[i]) * dt
+    return upperBound
+
+def lowerRiemannSum(a, b, n) :
+    tvalue = np.linspace(a, b, n)
+    dt = (b - a)/n
+    lowerBound = 0
+
+    for i in range(n - 1) :
+        lowerBound += integrand(tvalue[i]) * dt
+    return lowerBound
+
+def intergrateRiemann(a, b, n, epsilon) :
+    upperSum = upperRiemannSum(a, b, n)
+    lowerSum = lowerRiemannSum(a, b, n)
+    difference = upperSum - lowerSum
+
+    if difference < epsilon :
+        average = (upperSum + lowerSum)/2
+        print('I = {} +- {}' .format(average, difference))
+        return True 
+    else :
+        print('Difference > epsilon')
+        print('Upper: ', upperSum, ' Lower: ', lowerSum)
+        print('Try higher n-value')
+        return False
+
+# parameters for use
+a, b = -1, 2    # the interval for t
+n = 300        # number of subintervals 
+epsilon = 0.01  # chosen tolarance 
+
+resultRiemann = intergrateRiemann(a, b, n, epsilon)
+
+if resultRiemann is not None : 
+    print('Riemann sum: ', resultRiemann)
+    
+#a Simpson
+
+# define the r(t) = (t**2, t)
+def r(t) :
+    x = t**2
+    y = t
+    return x, y
+
+# define the dericative of r(t)
+
+def dr(t) : 
+    dx = 2*t
+    dy = 1
+    return dx, dy
+
+# define the vector field field u(x, y) = (y, x)
+def u(x, y) :
+    u1 = y
+    u2 = x
+    return u1, u2
+
+# this is the intergrand fot the line integral 
+def integrand(t) :
+    x, y = r(t)             # getting the coordinates of the curve r(t)
+    u1, u2 = u(x, y)        # evaluating the vector field
+    dx, dy = dr(t)          # getting the tangent vector 
+    return  u1 * dx + u2*dy #computing the dot product 
+
+
+def simpson(a, b, n) : 
+    assert n % 2 == 0, 'n is not even'
+
+    epsilon = (b - a)/n
+    tvalues = np.linspace(a, b, n + 1)
+    
+    #defining the g-vector as an array 
+    lst = [1] 
+    for i in range(1, n) :
+        if i % 2 == 0 :
+            lst.append(2)
+        else:
+            lst.append(4)
+    lst.append(1)
+
+    #g-vector 
+    gvec = np.array(lst, dtype = int)
+
+    #computing f_0, ... , f_n
+    fvec = np.array([integrand(t) for t in tvalues])
+
+    #scalar product 
+    integral = (epsilon / 3) * np.dot(gvec, fvec)
+
+    #error 
+    #error = -epsilon**4/180
+
+    return integral # , error
+
+# parameters for use
+a, b = -1, 2    # the interval for t
+n = 100         # number of subintervals 
+# epsilon = 0.01  # chosen tolarance 
+
+resultSimpson = (simpson(a, b, n))
+print('Simpson: ', resultSimpson)
+
+        
+
+
+
+
 
 
 
