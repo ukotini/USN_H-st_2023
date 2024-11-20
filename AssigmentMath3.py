@@ -332,10 +332,21 @@ def lowerRiemannSum(a, b, n) :
         lowerBound += integrand(tvalue[i]) * dt
     return lowerBound
 
+# def midpointRiemannSum(a, b, n):
+#     dt = (b - a) / n
+#     midpointBound = 0
+
+#     for i in range(n):
+#         t_mid = a + (i + 0.5) * dt  # Calculate the midpoint of each subinterval
+#         midpointBound += integrand(t_mid) * dt
+
+#     return midpointBound
+
 def intergrateRiemann(a, b, n, epsilon) :
     upperSum = upperRiemannSum(a, b, n)
     lowerSum = lowerRiemannSum(a, b, n)
-    difference = upperSum - lowerSum
+    # midpointSum = midpointRiemannSum(a, b, n)
+    difference = abs(upperSum - lowerSum)
 
     if difference < epsilon :
         average = (upperSum + lowerSum)/2
@@ -344,13 +355,14 @@ def intergrateRiemann(a, b, n, epsilon) :
     else :
         print('Difference > epsilon')
         print('Upper: ', upperSum, ' Lower: ', lowerSum)
+        # print('Midpoint:', midpointSum)
         print('Try higher n-value')
         return False
 
 # parameters for use
 a, b = -1, 2    # the interval for t
-n = 300        # number of subintervals 
-epsilon = 0.01  # chosen tolarance 
+n = 1100        # number of subintervals 
+epsilon = 0.1  # chosen tolarance 
 
 resultRiemann = intergrateRiemann(a, b, n, epsilon)
 
@@ -401,13 +413,13 @@ def simpson(a, b, n) :
             lst.append(4)
     lst.append(1)
 
-    #g-vector 
+    #g-vector converted into an array
     gvec = np.array(lst, dtype = int)
 
     #computing f_0, ... , f_n
     fvec = np.array([integrand(t) for t in tvalues])
 
-    #scalar product 
+    #scalar product (dot product of the two vectors)
     integral = (epsilon / 3) * np.dot(gvec, fvec)
 
     #error 
@@ -417,7 +429,7 @@ def simpson(a, b, n) :
 
 # parameters for use
 a, b = -1, 2    # the interval for t
-n = 100         # number of subintervals 
+n = 1100         # number of subintervals 
 # epsilon = 0.01  # chosen tolarance 
 
 resultSimpson = (simpson(a, b, n))
