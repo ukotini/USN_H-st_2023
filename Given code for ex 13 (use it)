@@ -1,0 +1,58 @@
+from scipy.integrate import quad
+
+# Define the integrand function for use in scipy's quad
+def integrand_scipy(t):
+    x, y = r(t)
+    u1, u2 = u(x, y)
+    dx_dt, dy_dt = r_prime(t)
+    return u1 * dx_dt + u2 * dy_dt
+
+# Calculate the reference value
+reference_value, _ = quad(integrand_scipy, a, b)
+print('Reference Value from quad:', reference_value)
+
+reference_value = 9.0  # Reference solution for comparison
+
+n_values = [10, 20, 50, 100, 200, 500, 1000]
+errors_riemann_upper = []
+errors_riemann_lower = []
+errors_simpson = []
+
+for n in n_values:
+    # Upper Riemann Sum
+    upper_riemann = upperRiemannSum(a, b, n)
+    errors_riemann_upper.append(abs(upper_riemann - reference_value))
+
+    # Lower Riemann Sum
+    lower_riemann = lowerRiemannSum(a, b, n)
+    errors_riemann_lower.append(abs(lower_riemann - reference_value))
+
+    # Simpson's Rule
+    if n % 2 == 0:  # Simpson's rule requires an even n
+        simp = simpson(a, b, n)
+        errors_simpson.append(abs(simp - reference_value))
+    else:
+        errors_simpson.append(None)  # Simpson's rule not applicable for odd n
+
+# Plotting the errors
+plt.figure(figsize=(10, 6))
+
+# Upper Riemann Sum Error
+plt.plot(n_values, errors_riemann_upper, label='Upper Riemann Sum', marker='o')
+
+# Lower Riemann Sum Error
+plt.plot(n_values, errors_riemann_lower, label='Lower Riemann Sum', marker='o')
+
+# Simpson's Rule Error
+simpson_errors_valid = [e for e in errors_simpson if e is not None]
+simpson_n_values_valid = [n for n, e in zip(n_values, errors_simpson) if e is not None]
+plt.plot(simpson_n_values_valid, simpson_errors_valid, label="Simpson's Rule", marker='o')
+
+plt.yscale('log')
+plt.xscale('log')
+plt.xlabel('Number of Subintervals (n)')
+plt.ylabel('Absolute Error')
+plt.title('Comparison of Riemann Sums and Simpson\'s Rule (Accuracy and Convergence)')
+plt.legend()
+plt.grid(True)
+plt.show()
