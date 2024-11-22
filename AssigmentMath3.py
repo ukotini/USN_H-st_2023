@@ -1025,10 +1025,63 @@ from mpl_toolkits.mplot3d import Axes3D #used for 3D scalar fields
 
 # using the code from double integral chapter and use that for polar coordinates
 
+# f(rho, theta)
 def f_polar(rho, theta) : 
-    return rho                  #what does this do?
+    return rho              # becaouse we only use rho in the polar integral (note this is overleaf)
 
-def simpson2D_polar(f, )
+def simpson2D_polar(f, r_bound, theta_bound, n) : 
+    r_min , r_max = r_bound                         # radius bound a < r < b
+    theta_min, theta_max = theta_bound              # theta bound  ex. 0 < theta < 2pi
+
+    dr = (r_max - r_min) / n                        # step size for the radius 
+    dtheta = (theta_max - theta_min) / n            # step size for theta 
+
+
+    # making grid point for both rho and theta 
+    rvalues = np.linspace(r_min, r_max, n + 1)
+    thetavalues = np.linspace(theta_min, theta_max, n + 1)
+
+    r, theta = np.meshgrid(rvalues, thetavalues)
+
+    F = f(r, theta)
+
+    lst = [1]
+    for i in range (1, n) :
+        if i % 2 == 0 :
+            lst.append(2)
+        else:
+            lst.append(4)
+    lst.append(1)
+
+    gvec = np.array(lst, dtype=int)
+
+    Int = (dr * dtheta / 9) * (gvec.dot(F * r)).dot(gvec.T) # we need to multiply the F with the Jacobian factor (rho)
+
+    return Int 
+
+# a
+
+R = np.exp(np.sqrt(np.log(7) + 39*np.pi))
+results_a = simpson2D_polar(f_polar, [0, R], [0, 2*np.pi], 10) # here we use the whole circle 
+print('The area of disk in part a is: ', results_a)
+
+# b 
+
+t_min = np.pi/7 
+t_max = (13*np.pi)/19 
+# R is the same as in part a) but we are finding a sector this time 
+results_b = simpson2D_polar(f_polar, [0, R], [t_min, t_max], 10)
+print('The area of disk in part b is: ', results_b)
+
+# c
+
+# here we have two radiuses, and inner one and an outer one
+
+r_inner = np.sqrt(np.log(2 + np.pi)**2) # x**2 + y**2 < r**2, this is why the radius is in a square root 
+r_outer = R                             # the r is the same as in a so i use it here too
+results_c = simpson2D_polar(f_polar, [r_inner, r_outer], [0, 2*np.pi], 10) # again we use the whole circle 
+print('The area of disk in part c is: ', results_c)
+
 
 
 
