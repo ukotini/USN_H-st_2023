@@ -1021,66 +1021,130 @@ from mpl_toolkits.mplot3d import Axes3D #used for 3D scalar fields
 # print("Intergral part d): ", results_d)
 
 
-#Exercise 20
+# #Exercise 20
 
-# using the code from double integral chapter and use that for polar coordinates
+# # using the code from double integral chapter and use that for polar coordinates
 
-# f(rho, theta)
-def f_polar(rho, theta) : 
-    return rho              # becaouse we only use rho in the polar integral (note this is overleaf)
+# # f(rho, theta)
+# def f_polar(rho, theta) : 
+#     return rho              # becaouse we only use rho in the polar integral (note this is overleaf)
 
-def simpson2D_polar(f, r_bound, theta_bound, n) : 
-    r_min , r_max = r_bound                         # radius bound a < r < b
-    theta_min, theta_max = theta_bound              # theta bound  ex. 0 < theta < 2pi
+# def simpson2D_polar(f, r_bound, theta_bound, n) : 
+#     r_min , r_max = r_bound                         # radius bound a < r < b
+#     theta_min, theta_max = theta_bound              # theta bound  ex. 0 < theta < 2pi
 
-    dr = (r_max - r_min) / n                        # step size for the radius 
-    dtheta = (theta_max - theta_min) / n            # step size for theta 
+#     dr = (r_max - r_min) / n                        # step size for the radius 
+#     dtheta = (theta_max - theta_min) / n            # step size for theta 
 
 
-    # making grid point for both rho and theta 
-    rvalues = np.linspace(r_min, r_max, n + 1)
-    thetavalues = np.linspace(theta_min, theta_max, n + 1)
+#     # making grid point for both rho and theta 
+#     rvalues = np.linspace(r_min, r_max, n + 1)
+#     thetavalues = np.linspace(theta_min, theta_max, n + 1)
 
-    r, theta = np.meshgrid(rvalues, thetavalues)
+#     r, theta = np.meshgrid(rvalues, thetavalues)
 
-    F = f(r, theta)
+#     F = f(r, theta)
 
-    lst = [1]
-    for i in range (1, n) :
-        if i % 2 == 0 :
-            lst.append(2)
-        else:
-            lst.append(4)
-    lst.append(1)
+#     lst = [1]
+#     for i in range (1, n) :
+#         if i % 2 == 0 :
+#             lst.append(2)
+#         else:
+#             lst.append(4)
+#     lst.append(1)
 
-    gvec = np.array(lst, dtype=int)
+#     gvec = np.array(lst, dtype=int)
 
-    Int = (dr * dtheta / 9) * (gvec.dot(F * r)).dot(gvec.T) # we need to multiply the F with the Jacobian factor (rho)
+#     Int = (dr * dtheta / 9) * (gvec.dot(F * r)).dot(gvec.T) # we need to multiply the F with the Jacobian factor (rho)
 
-    return Int 
+#     return Int 
 
-# a
+# # a
 
-R = np.exp(np.sqrt(np.log(7) + 39*np.pi))
-results_a = simpson2D_polar(f_polar, [0, R], [0, 2*np.pi], 10) # here we use the whole circle 
-print('The area of disk in part a is: ', results_a)
+# R = np.exp(np.sqrt(np.log(7) + 39*np.pi))
+# results_a = simpson2D_polar(f_polar, [0, R], [0, 2*np.pi], 10) # here we use the whole circle 
+# print('The area of disk in part a is: ', results_a)
 
-# b 
+# # b 
 
-t_min = np.pi/7 
-t_max = (13*np.pi)/19 
-# R is the same as in part a) but we are finding a sector this time 
-results_b = simpson2D_polar(f_polar, [0, R], [t_min, t_max], 10)
-print('The area of disk in part b is: ', results_b)
+# t_min = np.pi/7 
+# t_max = (13*np.pi)/19 
+# # R is the same as in part a) but we are finding a sector this time 
+# results_b = simpson2D_polar(f_polar, [0, R], [t_min, t_max], 10)
+# print('The area of disk in part b is: ', results_b)
 
-# c
+# # c
 
-# here we have two radiuses, and inner one and an outer one
+# # here we have two radiuses, and inner one and an outer one
 
-r_inner = np.sqrt(np.log(2 + np.pi)**2) # x**2 + y**2 < r**2, this is why the radius is in a square root 
-r_outer = R                             # the r is the same as in a so i use it here too
-results_c = simpson2D_polar(f_polar, [r_inner, r_outer], [0, 2*np.pi], 10) # again we use the whole circle 
-print('The area of disk in part c is: ', results_c)
+# r_inner = np.sqrt(np.log(2 + np.pi)**2) # x**2 + y**2 < r**2, this is why the radius is in a square root 
+# r_outer = R                             # the r is the same as in a so i use it here too
+# results_c = simpson2D_polar(f_polar, [r_inner, r_outer], [0, 2*np.pi], 10) # again we use the whole circle 
+# print('The area of disk in part c is: ', results_c)
+
+# Exercise 23 Surface Integrals
+
+from scipy.integrate import simps # https://www.geeksforgeeks.org/scipy-integration/
+# surface a
+def X_a(x, y) :
+    return np.array([x, y, np.cos(x**2 - y**20)])
+
+# surface b
+def X_b(x, y) : 
+    return np.array([np.sin(y), np.cos(x*y), x**2 - y**2 + np.sin(x) + np.cos(x)])
+
+# the scalar field of a
+def f_a(x, y, z) :
+    return x*y**2 - z**3
+
+# the scalar field of b
+def f_b(x, y, z) :
+    return np.exp(-x**2 - y**2 - z**2)
+
+# calculating the magnitude of the normal vector 
+def normal_vec_length(X, x, y) :
+
+    # first the partial derivatives 
+    fz = X[2]
+    fx = np.gradient(fz, x, axis=0) # ∂f/∂x
+    fy = np.gradient(fz, y, axis=1) # ∂f/∂y
+
+    length_N = np.sqrt(1 + fx**2 + fy**2)
+    
+    return length_N
+
+# i use the simpson rule for the surface integral, i do belive i have showed i understand it so i will just use a already made function 
+def surface_integral_calulate(X, f, x_bounds, y_bounds, n) :
+
+    # setting up a grid of points <3
+    x_min, x_max = x_bounds
+    y_min, y_max = y_bounds
+    x = np.linspace(x_min, x_max, n)
+    y = np.linspace(y_min, y_max, n)
+
+    x_grid, y_grid = np.meshgrid(x, y)
+
+    Xvalues = X(x_grid, y_grid)
+
+    # calculating the magnitude of the normal vector 
+    length_of_N = normal_vec_length(Xvalues, x_grid, y_grid)
+
+    z_grid = Xvalues[2]
+
+    # the scalar field
+    fvalues = f(x_grid, y_grid, z_grid)
+
+    # the integrand of f(X(x, y)) * ||N||
+    integrand  = fvalues * length_of_N
+
+    # integrating using the Simpson rule, first we integrate along x - axis and then y - axis
+    integral_x = simps(integrand, x, axis=0)
+    integral_y = simps(integral_x, y)
+
+    return integral_y
+
+
+
 
 
 
