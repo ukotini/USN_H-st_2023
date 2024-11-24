@@ -1082,9 +1082,90 @@ from mpl_toolkits.mplot3d import Axes3D #used for 3D scalar fields
 # results_c = simpson2D_polar(f_polar, [r_inner, r_outer], [0, 2*np.pi], 10) # again we use the whole circle 
 # print('The area of disk in part c is: ', results_c)
 
-# Exercise 23 Surface Integrals
+# # Exercise 23 Surface Integrals over scalar fields
 
 from scipy.integrate import simps # https://www.geeksforgeeks.org/scipy-integration/
+# # surface a
+# def X_a(x, y) :
+#     return np.array([x, y, np.cos(x**2 - y**20)])
+
+# # surface b
+# def X_b(x, y) : 
+#     return np.array([np.sin(y), np.cos(x*y), x**2 - y**2 + np.sin(x) + np.cos(x)])
+
+# # the scalar field of a
+# def f_a(x, y, z) :
+#     return x*y**2 - z**3
+
+# # the scalar field of b
+# def f_b(x, y, z) :
+#     return np.exp(-x**2 - y**2 - z**2)
+
+# # calculating the magnitude of the normal vector 
+# def normal_vec_length(X, x_grid, y_grid) :
+
+#     # first the partial derivatives 
+#     fz = X[2]
+
+#     x = x_grid[0, :]    # we use the first row of the 2D array, it represents the x
+#     y = y_grid[:, 0]    # we use the second row of the 2D array, it represents the y
+
+#     fx = np.gradient(fz, x, axis=0) # ∂f/∂x
+#     fy = np.gradient(fz, y, axis=1) # ∂f/∂y
+
+#     length_N = np.sqrt(1 + fx**2 + fy**2)
+    
+#     return length_N
+
+# # i use the simpson rule for the surface integral, i do belive i have showed i understand it so i will just use a already made function 
+# def surface_integral_calulate(X, f, x_bounds, y_bounds, n) :
+
+#     # setting up a grid of points <3
+#     x_min, x_max = x_bounds
+#     y_min, y_max = y_bounds
+#     x = np.linspace(x_min, x_max, n)
+#     y = np.linspace(y_min, y_max, n)
+
+#     x_grid, y_grid = np.meshgrid(x, y)
+
+#     Xvalues = X(x_grid, y_grid)
+
+#     # calculating the magnitude of the normal vector 
+#     length_of_N = normal_vec_length(Xvalues, x_grid, y_grid)
+
+#     z_grid = Xvalues[2]
+
+#     # the scalar field
+#     fvalues = f(x_grid, y_grid, z_grid)
+
+#     # the integrand of f(X(x, y)) * ||N||
+#     integrand  = fvalues * length_of_N
+
+#     # integrating using the Simpson rule, first we integrate along x - axis and then y - axis
+#     integral_x = simps(integrand, x, axis=0)
+#     integral_y = simps(integral_x, y)
+
+#     return integral_y
+
+# # bounds for a
+# a_xbound = (-1, 1)
+# a_ybound = (-1, 1)
+
+# # bound for b
+# b_xbound = (0, 2*np.pi)
+# b_ybound = (0, 2*np.pi)
+# n = 2000  # number of grid points
+
+# a_results = surface_integral_calulate(X_a, f_a, a_xbound, a_ybound, n)
+# print(f"The surface integral for a): {a_results:.4f}")
+
+# b_results = surface_integral_calulate(X_b, f_b, b_xbound, b_ybound, n)
+# print(f"The surface integral for b): {b_results:.4f}")
+
+# # når n >= 1000 da ser vi at a resultatet stabiliseres 
+
+# Exercise 25 Surface integrals of vector fields 
+
 # surface a
 def X_a(x, y) :
     return np.array([x, y, np.cos(x**2 - y**20)])
@@ -1094,18 +1175,22 @@ def X_b(x, y) :
     return np.array([np.sin(y), np.cos(x*y), x**2 - y**2 + np.sin(x) + np.cos(x)])
 
 # the scalar field of a
-def f_a(x, y, z) :
-    return x*y**2 - z**3
+def F_a(x, y, z) :
+    return np.array([-x, y + x, z**2])
 
 # the scalar field of b
-def f_b(x, y, z) :
-    return np.exp(-x**2 - y**2 - z**2)
+def F_b(x, y, z) :
+    return np.array([x*y, z**2 - x**2, x*y**3 - z])
 
 # calculating the magnitude of the normal vector 
-def normal_vec_length(X, x, y) :
+def normal_vec_length(X, x_grid, y_grid) :
 
     # first the partial derivatives 
     fz = X[2]
+
+    x = x_grid[0, :]    # we use the first row of the 2D array, it represents the x
+    y = y_grid[:, 0]    # we use the second row of the 2D array, it represents the y
+
     fx = np.gradient(fz, x, axis=0) # ∂f/∂x
     fy = np.gradient(fz, y, axis=1) # ∂f/∂y
 
@@ -1113,36 +1198,73 @@ def normal_vec_length(X, x, y) :
     
     return length_N
 
-# i use the simpson rule for the surface integral, i do belive i have showed i understand it so i will just use a already made function 
-def surface_integral_calulate(X, f, x_bounds, y_bounds, n) :
-
-    # setting up a grid of points <3
+def calculate_flux_integral(F, X, x_bounds, y_bounds, n) : 
     x_min, x_max = x_bounds
     y_min, y_max = y_bounds
+
+    # grid of points 
     x = np.linspace(x_min, x_max, n)
     y = np.linspace(y_min, y_max, n)
+    x_meshgrid,  y_meshgrid = np.meshgrid(x, y)
 
-    x_grid, y_grid = np.meshgrid(x, y)
+    Xvalues = X(x_meshgrid, y_meshgrid)
+    xValues, yValues, zValues = Xvalues
 
-    Xvalues = X(x_grid, y_grid)
+    # calculating the magnitude of the normal vector ||N||
+    length_of_N = normal_vec_length(Xvalues, x_meshgrid, y_meshgrid)
+    Fvalues = F(xValues, yValues, zValues)
 
-    # calculating the magnitude of the normal vector 
-    length_of_N = normal_vec_length(Xvalues, x_grid, y_grid)
+    # finding the normal vector components 
+    fx = np.gradient(zValues, x, axis=0)
+    fy = np.gradient(zValues, y, axis=1)
+    Nvec = np.array([-fx, -fy, np.ones_like(fx)]) 
+    # 'ones_line' makes an array liek the fx array, but filled with only ones 
+    # i use it to represent the third compontent of the normal vec for every point on the surface
 
-    z_grid = Xvalues[2]
+    # normalize the normal vector 
+    magnitude_of_N = np.sqrt(fx**2 + fy**2 + 1)
+    normalized_N = Nvec / magnitude_of_N
 
-    # the scalar field
-    fvalues = f(x_grid, y_grid, z_grid)
+    # find the dot product F · N
+    FdotN = np.sum(Fvalues * normalized_N, axis=0)
 
-    # the integrand of f(X(x, y)) * ||N||
-    integrand  = fvalues * length_of_N
+    # find the integrand F · N * ||N||
+    integrand = FdotN * length_of_N
 
-    # integrating using the Simpson rule, first we integrate along x - axis and then y - axis
-    integral_x = simps(integrand, x, axis=0)
-    integral_y = simps(integral_x, y)
+    # now integrate using simpsons rule 
+    integral_x = simps(integrand, x, axis=0)    # integrating along the x-axis 
+    flux = simps(integral_x, y)                 # integrating along the y-axis to calculate the flux 
 
-    return integral_y
+    return flux
+        
+# # bounds for a
+a_xbound = (-1, 1)
+a_ybound = (-1, 1)
 
+# bound for b
+b_xbound = (0, 2*np.pi)
+b_ybound = (0, 2*np.pi)
+n = 500  # number of grid points
+
+a_results = calculate_flux_integral(F_a, X_a, a_xbound, a_ybound, n)
+print(f"The surface integral for a): {a_results:.4f}")
+
+b_results = calculate_flux_integral(F_b, X_b, b_xbound, b_ybound, n)
+print(f"The surface integral for b): {b_results:.4f}")
+
+# etter n = 500 stabiliserer det seg
+
+# Exercise 26
+
+# the constant 
+
+q = 1.602e-19
+
+# the electrical field D(x, y, z)
+def D(x, y, z) :
+    r_sqrt = x**2 + y**2 + z**2
+    m = q / 4(4 * np.pi * (r_sqrt) ** (3/2))
+    return ([m*x, m*y, m*z])
 
 
 
