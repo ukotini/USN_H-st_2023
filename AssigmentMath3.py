@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt 
 from mpl_toolkits.mplot3d import Axes3D #used for 3D scalar fields 
+from scipy.integrate import simps       # https://www.geeksforgeeks.org/scipy-integration/
+from scipy.integrate import quad        # for exercise 28
 
 # #exercise  1
 
@@ -1084,7 +1086,7 @@ from mpl_toolkits.mplot3d import Axes3D #used for 3D scalar fields
 
 # # Exercise 23 Surface Integrals over scalar fields
 
-from scipy.integrate import simps # https://www.geeksforgeeks.org/scipy-integration/
+
 # # surface a
 # def X_a(x, y) :
 #     return np.array([x, y, np.cos(x**2 - y**20)])
@@ -1166,91 +1168,91 @@ from scipy.integrate import simps # https://www.geeksforgeeks.org/scipy-integrat
 
 # Exercise 25 Surface integrals of vector fields 
 
-# surface a
-def X_a(x, y) :
-    return np.array([x, y, np.cos(x**2 - y**20)])
+# # surface a
+# def X_a(x, y) :
+#     return np.array([x, y, np.cos(x**2 - y**20)])
 
-# surface b
-def X_b(x, y) : 
-    return np.array([np.sin(y), np.cos(x*y), x**2 - y**2 + np.sin(x) + np.cos(x)])
+# # surface b
+# def X_b(x, y) : 
+#     return np.array([np.sin(y), np.cos(x*y), x**2 - y**2 + np.sin(x) + np.cos(x)])
 
-# the scalar field of a
-def F_a(x, y, z) :
-    return np.array([-x, y + x, z**2])
+# # the scalar field of a
+# def F_a(x, y, z) :
+#     return np.array([-x, y + x, z**2])
 
-# the scalar field of b
-def F_b(x, y, z) :
-    return np.array([x*y, z**2 - x**2, x*y**3 - z])
+# # the scalar field of b
+# def F_b(x, y, z) :
+#     return np.array([x*y, z**2 - x**2, x*y**3 - z])
 
-# calculating the magnitude of the normal vector 
-def normal_vec_length(X, x_grid, y_grid) :
+# # calculating the magnitude of the normal vector 
+# def normal_vec_length(X, x_grid, y_grid) :
 
-    # first the partial derivatives 
-    fz = X[2]
+#     # first the partial derivatives 
+#     fz = X[2]
 
-    x = x_grid[0, :]    # we use the first row of the 2D array, it represents the x
-    y = y_grid[:, 0]    # we use the second row of the 2D array, it represents the y
+#     x = x_grid[0, :]    # we use the first row of the 2D array, it represents the x
+#     y = y_grid[:, 0]    # we use the second row of the 2D array, it represents the y
 
-    fx = np.gradient(fz, x, axis=0) # ∂f/∂x
-    fy = np.gradient(fz, y, axis=1) # ∂f/∂y
+#     fx = np.gradient(fz, x, axis=0) # ∂f/∂x
+#     fy = np.gradient(fz, y, axis=1) # ∂f/∂y
 
-    length_N = np.sqrt(1 + fx**2 + fy**2)
+#     length_N = np.sqrt(1 + fx**2 + fy**2)
     
-    return length_N
+#     return length_N
 
-def calculate_flux_integral(F, X, x_bounds, y_bounds, n) : 
-    x_min, x_max = x_bounds
-    y_min, y_max = y_bounds
+# def calculate_flux_integral(F, X, x_bounds, y_bounds, n) : 
+#     x_min, x_max = x_bounds
+#     y_min, y_max = y_bounds
 
-    # grid of points 
-    x = np.linspace(x_min, x_max, n)
-    y = np.linspace(y_min, y_max, n)
-    x_meshgrid,  y_meshgrid = np.meshgrid(x, y)
+#     # grid of points 
+#     x = np.linspace(x_min, x_max, n)
+#     y = np.linspace(y_min, y_max, n)
+#     x_meshgrid,  y_meshgrid = np.meshgrid(x, y)
 
-    Xvalues = X(x_meshgrid, y_meshgrid)
-    xValues, yValues, zValues = Xvalues
+#     Xvalues = X(x_meshgrid, y_meshgrid)
+#     xValues, yValues, zValues = Xvalues
 
-    # calculating the magnitude of the normal vector ||N||
-    length_of_N = normal_vec_length(Xvalues, x_meshgrid, y_meshgrid)
-    Fvalues = F(xValues, yValues, zValues)
+#     # calculating the magnitude of the normal vector ||N||
+#     length_of_N = normal_vec_length(Xvalues, x_meshgrid, y_meshgrid)
+#     Fvalues = F(xValues, yValues, zValues)
 
-    # finding the normal vector components 
-    fx = np.gradient(zValues, x, axis=0)
-    fy = np.gradient(zValues, y, axis=1)
-    Nvec = np.array([-fx, -fy, np.ones_like(fx)]) 
-    # 'ones_line' makes an array liek the fx array, but filled with only ones 
-    # i use it to represent the third compontent of the normal vec for every point on the surface
+#     # finding the normal vector components 
+#     fx = np.gradient(zValues, x, axis=0)
+#     fy = np.gradient(zValues, y, axis=1)
+#     Nvec = np.array([-fx, -fy, np.ones_like(fx)]) 
+#     # 'ones_line' makes an array liek the fx array, but filled with only ones 
+#     # i use it to represent the third compontent of the normal vec for every point on the surface
 
-    # normalize the normal vector 
-    magnitude_of_N = np.sqrt(fx**2 + fy**2 + 1)
-    normalized_N = Nvec / magnitude_of_N
+#     # normalize the normal vector 
+#     magnitude_of_N = np.sqrt(fx**2 + fy**2 + 1)
+#     normalized_N = Nvec / magnitude_of_N
 
-    # find the dot product F · N
-    FdotN = np.sum(Fvalues * normalized_N, axis=0)
+#     # find the dot product F · N
+#     FdotN = np.sum(Fvalues * normalized_N, axis=0)
 
-    # find the integrand F · N * ||N||
-    integrand = FdotN * length_of_N
+#     # find the integrand F · N * ||N||
+#     integrand = FdotN * length_of_N
 
-    # now integrate using simpsons rule 
-    integral_x = simps(integrand, x, axis=0)    # integrating along the x-axis 
-    flux = simps(integral_x, y)                 # integrating along the y-axis to calculate the flux 
+#     # now integrate using simpsons rule 
+#     integral_x = simps(integrand, x, axis=0)    # integrating along the x-axis 
+#     flux = simps(integral_x, y)                 # integrating along the y-axis to calculate the flux 
 
-    return flux
+#     return flux
         
-# # bounds for a
-a_xbound = (-1, 1)
-a_ybound = (-1, 1)
+# # # bounds for a
+# a_xbound = (-1, 1)
+# a_ybound = (-1, 1)
 
-# bound for b
-b_xbound = (0, 2*np.pi)
-b_ybound = (0, 2*np.pi)
-n = 500  # number of grid points
+# # bound for b
+# b_xbound = (0, 2*np.pi)
+# b_ybound = (0, 2*np.pi)
+# n = 500  # number of grid points
 
-a_results = calculate_flux_integral(F_a, X_a, a_xbound, a_ybound, n)
-print(f"The surface integral for a): {a_results:.4f}")
+# a_results = calculate_flux_integral(F_a, X_a, a_xbound, a_ybound, n)
+# print(f"The surface integral for a): {a_results:.4f}")
 
-b_results = calculate_flux_integral(F_b, X_b, b_xbound, b_ybound, n)
-print(f"The surface integral for b): {b_results:.4f}")
+# b_results = calculate_flux_integral(F_b, X_b, b_xbound, b_ybound, n)
+# print(f"The surface integral for b): {b_results:.4f}")
 
 # etter n = 500 stabiliserer det seg
 
@@ -1263,8 +1265,139 @@ q = 1.602e-19
 # the electrical field D(x, y, z)
 def D(x, y, z) :
     r_sqrt = x**2 + y**2 + z**2
-    m = q / 4(4 * np.pi * (r_sqrt) ** (3/2))
-    return ([m*x, m*y, m*z])
+    m = q / (4 * np.pi * (r_sqrt) ** (3/2))
+    return np.array([m*x, m*y, m*z])
+
+def X_cylinder(theta, z) : # 0 < theta < 2pi, 0 < z < h, use it for flux
+    r = 1 
+    return np.array([r*np.cos(theta), r*np.sin(theta), z])
+
+# parametrization of the cylidrical surface. 
+# r = radius (distance from the central axis)
+# theta = azimuthal angle arond the central axis 
+# z = the height along the central axis 
+
+# for a point on the cylinder we can write it as:
+# x = rcos(theta)
+# y = rsin(theta)
+# z = z
+
+# calculating the magnitude of the normal vector 
+# def normal_vec_length(theta_grid, z_grid):
+
+#     r = 1
+
+#     dx_dtheta = -r*np.sin(theta_grid).astype(float)
+#     dy_dteta = r*np.cos(theta_grid).astype(float)
+#     dz_dtheta = np.zeros_like(theta_grid, dtype=float) # got erros becouse of types and the shapes (combining 1 dimentional values with arrays)
+
+#     dX_dtheta = np.array([dx_dtheta, dy_dteta, dz_dtheta], dtype=float)
+
+#     dx_dz = np.zeros_like(z_grid, dtype=float)
+#     dy_dz = np.zeros_like(z_grid, dtype=float)
+#     dz_dz = np.ones_like(z_grid, dtype=float)
+
+#     dX_dz = np.array([dx_dz, dy_dz, dz_dz], dtype=float)
+
+#     # using cross to find the cross product for the normal vector: https://www.programiz.com/python-programming/numpy/methods/cross
+#     Nvec = np.cross(dX_dtheta.T, dX_dz.T, axisa=0, axisb=0).T # T is used for Transposing the arrays so that we can cross them 
+
+#     # finding the magnitude of N -> ||N|| (using np functions this time. finding the norm): https://www.geeksforgeeks.org/find-a-matrix-or-vector-norm-using-numpy/
+#     N_magnitude = np.linalg.norm(Nvec, axis=0)
+
+#     return N_magnitude
+
+# def flux_integral_calculate(D, X, theta_bouds, z_bounds, n) : 
+#     theta_min, theta_max = theta_bouds
+#     z_min, z_max = z_bounds
+
+#     # grid points 
+
+#     thetaValues = np.linspace(theta_min, theta_max, n + 1)
+#     zValues = np.linspace(z_min, z_max, n + 1)
+#     thetaMeshGrid, zMeshGrid = np.meshgrid(thetaValues, zValues)
+    
+#     # surface parameters
+#     Xvalues = X(thetaMeshGrid, zMeshGrid)
+
+#     # calculte the vector field componets at each point 
+#     xValues, yValues, zValues = Xvalues
+#     Dvalues = D(xValues, yValues, zValues)
+
+#     # find the magnutide of the normal vector ||N||
+#     magnitude_N = normal_vec_length(thetaMeshGrid)
+
+#     # find the dot product D · N
+#     DdotN = np.sum(Dvalues * Xvalues, axis=0)
+
+#     # integrand  D · N * ||N||
+#     integrand = DdotN * magnitude_N
+
+#     # integrating using Simpson
+
+#     integral_theta = simps(integrand, thetaValues, axis=0)
+#     integral_z = simps(integral_theta, zValues)  # flux
+
+#     return integral_z
+
+
+# # bounds for the cylinder 
+# theta_bounds = (0, 2*np.pi)
+# z_bounds = (0, 1) # the height is h = 1
+# n = 50 
+
+# # part a
+# a_flux = flux_integral_calculate(D, X_cylinder, theta_bounds, z_bounds, n)
+# print(f"Flux in part a is: {a_flux:.4e}")
+
+# Exercise 28
+
+def inner_integral(z) : 
+    return z
+
+
+def inner_integral_calculations(z_bounds) :
+    z_min, z_max = z_bounds
+    z_integral, _ = quad(inner_integral, z_min, z_max)
+
+    return z_integral
+
+def outer_integral(x, y, inner_int) : 
+    return inner_int*(np.exp(-np.cos(x)*y))
+
+def outer_intergral_calculations(x_bounds, y_bounds, n, value_inner) :
+    a, b = x_bounds
+    c, d = y_bounds 
+
+    DeltaX = (b - a)/n
+    DeltaY = (d - c)/n
+
+    # mesh grid for x and y
+    x = np.linspace(a, b, n + 1)
+    y = np.linspace(c, d, n + 1)
+    x_mesh, y_mesh = np.meshgrid(x, y)
+
+    F = outer_integral(x_mesh, y_mesh, value_inner)
+
+    # simpsons rule weights 
+    lst = [1]
+    for i in range(1, n) :
+        if i % 2 == 0 :
+            lst.append(2)
+        else:
+            lst.append(4)
+    lst.append(1)
+
+    Gvec = np.array(lst, dtype=int)
+
+    double_integral = (DeltaX * DeltaY / 9) * (Gvec.dot(F)).dot(Gvec.T)
+
+    return double_integral
+
+x_bounds = (-np.pi, np.pi)
+y_bounds = (-np.sqrt(np.pi**2 - x**2))
+
+
 
 
 
