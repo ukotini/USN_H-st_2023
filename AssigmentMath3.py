@@ -1350,60 +1350,101 @@ from scipy.integrate import quad        # for exercise 28
 # a_flux = flux_integral_calculate(D, X_cylinder, theta_bounds, z_bounds, n)
 # print(f"Flux in part a is: {a_flux:.4e}")
 
-# Exercise 28
+# # Exercise 28
 
-def inner_integral(z) : 
-    return z
-
-
-def inner_integral_calculations(x, y) : # z is dependent of x and y
-
-    # bounds for z based on x and y
-    z_min = -np.sqrt( np.pi**2 - x**2 - y**2)
-    z_max = np.sqrt(np.pi**2 - x**2 - y**2)
-    z_integral, _ = quad(inner_integral, z_min, z_max)
-
-    return z_integral
-
-def outer_integral(x, y, inner_int) : 
-    return inner_int*(np.exp(-np.cos(x)*y))
-
-def outer_intergral_calculations(x_bounds, n ) :
-    x_min, x_max = x_bounds
-    x_points = np.linspace(x_min, x_max, n + 1)
+# def inner_integral(z) : 
+#     return z
 
 
-    yIntegralValues = []    # stores the values of integrating over the y variable for each value of x
-                            # for each value of x in range [xmin, xmax] we compute an integral for each y
-                            # the results are stored in this list 
+# def inner_integral_calculations(x, y) : # z is dependent of x and y
+
+#     # bounds for z based on x and y
+#     z_min = -np.sqrt( np.pi**2 - x**2 - y**2)
+#     z_max = np.sqrt(np.pi**2 - x**2 - y**2)
+#     z_integral, _ = quad(inner_integral, z_min, z_max)
+
+#     return z_integral
+
+# def outer_integral(x, y, inner_int) : 
+#     return inner_int*(np.exp(-np.cos(x)*y))
+
+# def outer_intergral_calculations(x_bounds, n ) :
+#     x_min, x_max = x_bounds
+#     x_points = np.linspace(x_min, x_max, n + 1)
+
+
+#     yIntegralValues = []    # stores the values of integrating over the y variable for each value of x
+#                             # for each value of x in range [xmin, xmax] we compute an integral for each y
+#                             # the results are stored in this list 
     
-    for x in x_points :
+#     for x in x_points :
 
-        # y bounds that depends on 
-        y_min = -np.sqrt(np.pi**2 - x**2)
-        y_max = np.sqrt(np.pi**2 - x**2)
-        y_points = np.linspace(y_min, y_max, n + 1)
+#         # y bounds that depends on 
+#         y_min = -np.sqrt(np.pi**2 - x**2)
+#         y_max = np.sqrt(np.pi**2 - x**2)
+#         y_points = np.linspace(y_min, y_max, n + 1)
 
-        integranlValues = [] # stores the integrand values of the function to be integrated over y for each value of y 
-        for y in y_points:
+#         integranlValues = [] # stores the integrand values of the function to be integrated over y for each value of y 
+#         for y in y_points:
 
-            inner_int = inner_integral_calculations(x, y) # x and y for the loops 
-            integrandValue = outer_integral(x, y, inner_int)
-            integranlValues.append(integrandValue)
+#             inner_int = inner_integral_calculations(x, y) # x and y for the loops 
+#             integrandValue = outer_integral(x, y, inner_int)
+#             integranlValues.append(integrandValue)
         
-        # using simpson rule to integrate over y for the current values of x
-        y_integral = simps(integranlValues, y_points)
-        yIntegralValues.append(y_integral)
+#         # using simpson rule to integrate over y for the current values of x
+#         y_integral = simps(integranlValues, y_points)
+#         yIntegralValues.append(y_integral)
     
-    # using simpson rule to integrate over x
-    integral = simps(yIntegralValues, x_points)
+#     # using simpson rule to integrate over x
+#     integral = simps(yIntegralValues, x_points)
 
-    return integral
+#     return integral
 
-x_bounds = (-np.pi, np.pi)
-n = 10
-results = outer_intergral_calculations(x_bounds, n)
-print("The result of the triple integral is: ", results)
+# x_bounds = (-np.pi, np.pi)
+# n = 10
+# results = outer_intergral_calculations(x_bounds, n)
+# print("The result of the triple integral is: ", results)
+
+# Exercise 31
+
+def density(r, theta, phi) :
+    x = r*np.sin(theta)*np.cos(phi) # the x component in spherical coordinates
+    y = r*np.sin(theta)*np.sin(phi) # the y component in spherical coordinates
+    z = r*np.cos(theta)             # the z component in spherical coordinates 
+    return (2 - z**2) * np.exp(1 - x**2 - y**2)    
+
+def integrand(r, theta, phi) :
+    orthogonal_dist = (r*np.sin(theta))**2  # the orthogonal distance squared
+    volume_el = r**2 * np.sin(theta)        # the volume element in spherical coordinates
+    return density(r, theta, phi) * orthogonal_dist * volume_el
+
+def integral_over_r(theta, phi, r_bounds) :
+    r_min, r_max = r_bounds
+    integrand_r = lambda r: integrand(r, theta, phi)
+    result, _ = quad(integrand_r, r_min, r_max) 
+    return result
+
+def integral_over_theta(phi, r_bounds, theta_bounds, n) :
+    theta_min, theta_max = theta_bounds
+    theta_points = np.linspace(theta_min, theta_max, n + 1)
+    integrand_values = [integral_over_r(theta, phi, r_bounds) for theta in theta_points]
+    return simps(integrand_values, theta_points)
+
+def integral_over_phi(phi_bounds, r_bounds, theta_bounds, n) :
+    phi_min, phi_max = phi_bounds
+    phi_points = np.linspace(phi_min, phi_max, n + 1)
+    integrand_values = [integral_over_theta(phi, r_bounds, theta_bounds, n) for phi in phi_points]
+    return simps(integrand_values, phi_points)
+
+
+r_bounds = (0, 1)
+theta_bounds = (0, np.pi)
+phi_bounds = (0, 2*np.pi)
+
+n = 200
+
+result_a = integral_over_phi(phi_bounds, r_bounds, theta_bounds, n)
+print("The moment of intertia of the ball B_1 is: ", result_a)
 
 
 
