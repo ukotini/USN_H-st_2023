@@ -1256,21 +1256,21 @@ from scipy.integrate import quad        # for exercise 28
 
 # etter n = 500 stabiliserer det seg
 
-# Exercise 26
+# # Exercise 26
 
-# the constant 
+# # the constant 
 
-q = 1.602e-19
+# q = 1.602e-19
 
-# the electrical field D(x, y, z)
-def D(x, y, z) :
-    r_sqrt = x**2 + y**2 + z**2
-    m = q / (4 * np.pi * (r_sqrt) ** (3/2))
-    return np.array([m*x, m*y, m*z])
+# # the electrical field D(x, y, z)
+# def D(x, y, z) :
+#     r_sqrt = x**2 + y**2 + z**2
+#     m = q / (4 * np.pi * (r_sqrt) ** (3/2))
+#     return np.array([m*x, m*y, m*z])
 
-def X_cylinder(theta, z) : # 0 < theta < 2pi, 0 < z < h, use it for flux
-    r = 1 
-    return np.array([r*np.cos(theta), r*np.sin(theta), z])
+# def X_cylinder(theta, z) : # 0 < theta < 2pi, 0 < z < h, use it for flux
+#     r = 1 
+#     return np.array([r*np.cos(theta), r*np.sin(theta), z])
 
 # parametrization of the cylidrical surface. 
 # r = radius (distance from the central axis)
@@ -1356,8 +1356,11 @@ def inner_integral(z) :
     return z
 
 
-def inner_integral_calculations(z_bounds) :
-    z_min, z_max = z_bounds
+def inner_integral_calculations(x, y) : # z is dependent of x and y
+
+    # bounds for z based on x and y
+    z_min = -np.sqrt( np.pi**2 - x**2 - y**2)
+    z_max = np.sqrt(np.pi**2 - x**2 - y**2)
     z_integral, _ = quad(inner_integral, z_min, z_max)
 
     return z_integral
@@ -1365,37 +1368,44 @@ def inner_integral_calculations(z_bounds) :
 def outer_integral(x, y, inner_int) : 
     return inner_int*(np.exp(-np.cos(x)*y))
 
-def outer_intergral_calculations(x_bounds, y_bounds, n, value_inner) :
-    a, b = x_bounds
-    c, d = y_bounds 
+def outer_intergral_calculations(x_bounds, n ) :
+    x_min, x_max = x_bounds
+    x_points = np.linspace(x_min, x_max, n + 1)
 
-    DeltaX = (b - a)/n
-    DeltaY = (d - c)/n
 
-    # mesh grid for x and y
-    x = np.linspace(a, b, n + 1)
-    y = np.linspace(c, d, n + 1)
-    x_mesh, y_mesh = np.meshgrid(x, y)
+    yIntegralValues = []    # stores the values of integrating over the y variable for each value of x
+                            # for each value of x in range [xmin, xmax] we compute an integral for each y
+                            # the results are stored in this list 
+    
+    for x in x_points :
 
-    F = outer_integral(x_mesh, y_mesh, value_inner)
+        # y bounds that depends on 
+        y_min = -np.sqrt(np.pi**2 - x**2)
+        y_max = np.sqrt(np.pi**2 - x**2)
+        y_points = np.linspace(y_min, y_max, n + 1)
 
-    # simpsons rule weights 
-    lst = [1]
-    for i in range(1, n) :
-        if i % 2 == 0 :
-            lst.append(2)
-        else:
-            lst.append(4)
-    lst.append(1)
+        integranlValues = [] # stores the integrand values of the function to be integrated over y for each value of y 
+        for y in y_points:
 
-    Gvec = np.array(lst, dtype=int)
+            inner_int = inner_integral_calculations(x, y) # x and y for the loops 
+            integrandValue = outer_integral(x, y, inner_int)
+            integranlValues.append(integrandValue)
+        
+        # using simpson rule to integrate over y for the current values of x
+        y_integral = simps(integranlValues, y_points)
+        yIntegralValues.append(y_integral)
+    
+    # using simpson rule to integrate over x
+    integral = simps(yIntegralValues, x_points)
 
-    double_integral = (DeltaX * DeltaY / 9) * (Gvec.dot(F)).dot(Gvec.T)
-
-    return double_integral
+    return integral
 
 x_bounds = (-np.pi, np.pi)
-y_bounds = (-np.sqrt(np.pi**2 - x**2))
+n = 10
+results = outer_intergral_calculations(x_bounds, n)
+print("The result of the triple integral is: ", results)
+
+
 
 
 
