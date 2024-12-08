@@ -4,9 +4,9 @@ from mpl_toolkits.mplot3d import Axes3D #used for 3D scalar fields
 from scipy.integrate import simps       # https://www.geeksforgeeks.org/scipy-integration/
 from scipy.integrate import quad        # for exercise 28
 
-#, 3, 4, 5, 6, 8, 9, 13(abe), 14, 16, 17(ac), 19, 20, 23, 25, 26, 28, 31.
+# # 1, 3, 4, 5, 6, 8, 9, 13(abe), 14, 16, 17(ac), 19, 20, 23, 25, 26, 28, 31.
 
-#Exercise 1
+# # Exercise 1
 
 # #a)
 
@@ -37,7 +37,7 @@ from scipy.integrate import quad        # for exercise 28
 # plt.grid(True)
 # plt.show()
 
-#c
+# # c
 
 # t = np.linspace(-2, 2)
 # x = t**5
@@ -56,7 +56,7 @@ from scipy.integrate import quad        # for exercise 28
 # plt.grid(True)
 # plt.show()
 
-#d
+# # d
 
 # theta = np.linspace(0, 2*np.pi)
 # x = np.cos(theta)
@@ -75,9 +75,9 @@ from scipy.integrate import quad        # for exercise 28
 # plt.grid(True)
 # plt.show()
 
-# Exercise 3
+# # Exercise 3
 
-# a
+# # a
 
 # def f(x, y) :
 #     return x + 3*y - 1
@@ -100,7 +100,7 @@ from scipy.integrate import quad        # for exercise 28
 # ax.set_title("3a")
 # plt.show()
 
-# b The monkey saddle (wierd name, but okay)
+# # b The monkey saddle
 
 
 # def f(x, y) :
@@ -124,7 +124,7 @@ from scipy.integrate import quad        # for exercise 28
 # ax.set_title("3b")
 # plt.show()
 
-# c
+# # c
 
 # x = np.linspace(-1, 1, 40)
 # y = np.linspace(-1, 1, 40)
@@ -144,7 +144,7 @@ from scipy.integrate import quad        # for exercise 28
 # ax.set_title("3c")
 # plt.show()
 
-# d
+# # d
 
 # x = np.linspace(-2, 2, 40)
 # y = np.linspace(-2, 2, 40)
@@ -164,7 +164,7 @@ from scipy.integrate import quad        # for exercise 28
 # ax.set_title("3d")
 # plt.show()
 
-# e
+# # e
 
 # def f(x, y) :
 #     return (x**2 + y - 11)**2 + (x + y**2 - 7)**2
@@ -187,9 +187,9 @@ from scipy.integrate import quad        # for exercise 28
 # ax.set_title("3e")
 # plt.show()
 
-#Exercise 4
+# # Exercise 4
 
-# a
+# # a
 # def surface(x, y) :
 #     z = 1 - (1/2) * x * y**2
 #     return z
@@ -285,9 +285,9 @@ from scipy.integrate import quad        # for exercise 28
 
 
 
-# Exercise 5
+# # Exercise 5
 
-# a
+# # a
 
 # def fun(x, y) :
 #     return 1 - x**2 - y**3 - x + 3*y - x*y
@@ -307,7 +307,7 @@ from scipy.integrate import quad        # for exercise 28
 # cont = ax.contour(u, v, w, levels, colors = 'black')
 # plt.show()
 
-# b
+# # b
 
 # def fun(x, y) :
 #     return (x**2 + y - 11)**2 + (x + y**2 - 7)**2
@@ -327,7 +327,7 @@ from scipy.integrate import quad        # for exercise 28
 # cont = ax.contour(u, v, w, levels, colors = 'black')
 # plt.show()
 
-# c
+# # c
 
 # def fun(x, y) :
 #     return np.cos(2*x)*np.sin(y)
@@ -343,7 +343,7 @@ from scipy.integrate import quad        # for exercise 28
 # ax = figure.add_subplot()
 
 # levels = np.arange(-2, 2, 0.1) #(-5, 5, 1) ga bare en mesh aktig bilde så endret litt på dette
-# endringer 1 -> 0.5 -> 0.2 -> 0.1 
+# # endringer 1 -> 0.5 -> 0.2 -> 0.1 
 
 # cont = ax.contour(u, v, w, levels, colors = 'black')
 # plt.show()
@@ -683,9 +683,7 @@ from scipy.integrate import quad        # for exercise 28
 # epsilon = 0.1  # chosen tolarance 
 
 # resultRiemann = intergrateRiemann(a, b, n, epsilon)
-
-# if resultRiemann is not None : 
-#     print('Riemann sum: ', resultRiemann)
+# print('Riemann sum: ', resultRiemann)
     
 # #a Simpson
 
@@ -1061,8 +1059,8 @@ from scipy.integrate import quad        # for exercise 28
 
 # # parameters for use
 # a, b = 0, 7
-# n = 1000      
-# epsilon = 0.1  
+# n = 6000      
+# epsilon = 0.01  
 
 # resultRiemann = intergrateRiemann(a, b, n, epsilon)
 
@@ -1273,14 +1271,80 @@ from scipy.integrate import quad        # for exercise 28
 
 # # Exercise 16 Partial functions 
 
-# from sympy import symbols, integrate, diff
+# # b
 
-# x, y = symbols('x y') # creating symbolic variables x y
+# def potential_func(x, y) :
+#     return x**2 + (2*x**2)*(y**(1/3)) + y**2
+
+# start = (-3**(-1/2), np.sqrt(2))
+# stop = (0, np.sqrt(3))
+
+# # evaluating the potential function at the start points and the stop points
+# psi_at_start = potential_func(start[0], start[1])
+# psi_at_stop = potential_func(stop[0], stop[1])
+
+# work = psi_at_stop - psi_at_start
+
+# print(f"The work done on B by F along the curve C is: {work}")
+
+# # Exercise 17
+
+# # a
 
 # def F(x, y) :
-#     P = 3*x**2 - 2*x*y - y**2
-#     Q = 3*y**2 - x**2 - 2*x*y**2
-#     return P, Q
+#     F1 = x**2 - y**2
+#     F2 = x*y**2
+#     return np.array([F1, F2])
+
+# def r(t) :
+#     x = 1 / (t + 2)
+#     y = t**3
+#     return np.array([x, y])
+
+# def dr(t) :
+#     dx = -1 / (t + 2)**2
+#     dy = 3 * t**2
+#     return np.array([dx, dy])
+
+#     # F(r(t)) ⋅ dr(t)
+# def integrand(t) :
+#     r_t = r(t)
+#     dr_t = dr(t)
+#     F_r_t = F(r_t[0], r_t[1]) # r_t[0] => the x, r_t[1] => the y
+#     return np.dot(F_r_t, dr_t)
+
+# a, b = -1, 1
+# work_a,_ = quad(integrand, a, b)
+
+# print(f"The work done on the particle along the curve in a is: {work_a:.6f}")
+
+# # c
+# def F(x, y) :
+#     F1 = y**2 - x**3 + x + 1
+#     F2 = np.sqrt(x**2 + y**2)
+#     return np.array([F1, F2])
+
+# def r(t) :
+#     x = np.sin(2*t)
+#     y = np.cos(t)
+#     return np.array([x, y])
+
+# def dr(t) :
+#     dx = 2*np.cos(2*t)
+#     dy = -np.sin(t)
+#     return np.array([dx, dy])
+
+# def integrand(t) :
+#     r_t = r(t)
+#     dr_t = dr(t)
+#     F_r_t = F(r_t[0], r_t[1])
+#     return np.dot(F_r_t, dr_t)
+
+# a, b = 0, 2*np.pi
+# work_c,_ = quad(integrand, a, b)
+
+# print(f"The work done on the particle along the curve in c is: {work_b:.6f}")
+
 
 # # Exercise 19 Double integrals 
 
@@ -1579,7 +1643,7 @@ from scipy.integrate import quad        # for exercise 28
 # b_results = calculate_flux_integral(F_b, X_b, b_xbound, b_ybound, n)
 # print(f"The flux for b): {b_results:.4f}")
 
-# etter n = 500 stabiliserer det seg
+# # etter n = 500 stabiliserer det seg
 
 # # Exercise 26
 
@@ -1597,17 +1661,7 @@ from scipy.integrate import quad        # for exercise 28
 #     r = 1 
 #     return np.array([r*np.cos(theta), r*np.sin(theta), z])
 
-# parametrization of the cylidrical surface. 
-# r = radius (distance from the central axis)
-# theta = azimuthal angle arond the central axis 
-# z = the height along the central axis 
-
-# for a point on the cylinder we can write it as:
-# x = rcos(theta)
-# y = rsin(theta)
-# z = z
-
-# calculating the magnitude of the normal vector 
+# # calculating the magnitude of the normal vector 
 # def normal_vec_length(theta_grid, z_grid):
 
 #     r = 1
@@ -1781,7 +1835,7 @@ from scipy.integrate import quad        # for exercise 28
 # n = 200
 
 # result_a = integral_over_phi(phi_bounds, r_bounds, theta_bounds, n)
-# print("The moment of intertia of the ball B_1 is: ", result_a)
+# print("The moment of inertia of the ball B_1 is: ", result_a)
 
 # result_b = integral_over_phi(phi_bounds, None, theta_bounds, n, surface=True)
 # print("The moment of interia of the surface \u2202B_1: ", result_b)
@@ -1818,7 +1872,7 @@ from scipy.integrate import quad        # for exercise 28
 # z_bounds_hole = (-1, 1)     # height of the hole
 
 # results_c = computing_cylider_integral(r_bounds_hole, z_bounds_hole, n)
-# print("The moment of intertia of the cylinder: ", results_c)
+# print("The moment of inertia of the cylinder: ", results_c)
 # b1_minus_h = result_a - results_c
 # print("The moment of inertia of the ball B_1 \\ H is: ", b1_minus_h)
 
